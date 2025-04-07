@@ -80,6 +80,24 @@ const ChequeStatus = () => {
   const originalImageUrl = chequeApi.getChequeImageUrl(chequeId);
   const signatureImageUrl = chequeApi.getSignatureImageUrl(chequeId);
 
+  // Map the new API response structure to our display fields
+  const mappedData = {
+    bank: extractedData["Bank Name and Details"] || {},
+    payee: extractedData["Payee"] || {},
+    date: extractedData["Date"] || {},
+    account_number: extractedData["Account Number"] || {},
+    amount_numerical: extractedData["Amount (Numerical)"] || {},
+    amount_words: extractedData["Amount (Words)"] || {},
+    cheque_number: extractedData["Cheque Number"] || {},
+    routing_number: extractedData["Routing/IFSC Code"] || {},
+    micr_line: extractedData["MICR Line"] || {},
+    memo: {},  // Not available in new structure
+    signature_status: {
+      value: cheque.signature_coordinates?.exists ? "Signature present" : "No signature detected",
+      confidence: cheque.signature_coordinates?.confidence || 0
+    }
+  };
+
   return (
     <div className="card">
       <div className="card-header">
@@ -136,55 +154,55 @@ const ChequeStatus = () => {
             <div className="mb-3">
               <div className="d-flex justify-content-between">
                 <h5>{t('cheque.bank')}</h5>
-                {getConfidenceLevel(extractedData.bank_details?.confidence)}
+                {getConfidenceLevel(mappedData.bank.confidence)}
               </div>
-              <p>{extractedData.bank_details?.value || 'N/A'}</p>
-              {extractedData.bank_details?.reason && (
-                <p className="small text-muted">{extractedData.bank_details.reason}</p>
+              <p>{mappedData.bank.value || 'N/A'}</p>
+              {mappedData.bank.reason && (
+                <p className="small text-muted">{mappedData.bank.reason}</p>
               )}
             </div>
             
             <div className="mb-3">
               <div className="d-flex justify-content-between">
                 <h5>{t('cheque.payee')}</h5>
-                {getConfidenceLevel(extractedData.payee?.confidence)}
+                {getConfidenceLevel(mappedData.payee.confidence)}
               </div>
-              <p>{extractedData.payee?.value || 'N/A'}</p>
-              {extractedData.payee?.reason && (
-                <p className="small text-muted">{extractedData.payee.reason}</p>
+              <p>{mappedData.payee.value || 'N/A'}</p>
+              {mappedData.payee.reason && (
+                <p className="small text-muted">{mappedData.payee.reason}</p>
               )}
             </div>
             
             <div className="mb-3">
               <div className="d-flex justify-content-between">
                 <h5>{t('cheque.date')}</h5>
-                {getConfidenceLevel(extractedData.date?.confidence)}
+                {getConfidenceLevel(mappedData.date.confidence)}
               </div>
-              <p>{extractedData.date?.value || 'N/A'}</p>
-              {extractedData.date?.reason && (
-                <p className="small text-muted">{extractedData.date.reason}</p>
+              <p>{mappedData.date.value || 'N/A'}</p>
+              {mappedData.date.reason && (
+                <p className="small text-muted">{mappedData.date.reason}</p>
               )}
             </div>
             
             <div className="mb-3">
               <div className="d-flex justify-content-between">
                 <h5>{t('cheque.amount.num')}</h5>
-                {getConfidenceLevel(extractedData.amount_numerical?.confidence)}
+                {getConfidenceLevel(mappedData.amount_numerical.confidence)}
               </div>
-              <p>{extractedData.amount_numerical?.value || 'N/A'}</p>
-              {extractedData.amount_numerical?.reason && (
-                <p className="small text-muted">{extractedData.amount_numerical.reason}</p>
+              <p>{mappedData.amount_numerical.value || 'N/A'}</p>
+              {mappedData.amount_numerical.reason && (
+                <p className="small text-muted">{mappedData.amount_numerical.reason}</p>
               )}
             </div>
             
             <div className="mb-3">
               <div className="d-flex justify-content-between">
                 <h5>{t('cheque.amount.words')}</h5>
-                {getConfidenceLevel(extractedData.amount_words?.confidence)}
+                {getConfidenceLevel(mappedData.amount_words.confidence)}
               </div>
-              <p>{extractedData.amount_words?.value || 'N/A'}</p>
-              {extractedData.amount_words?.reason && (
-                <p className="small text-muted">{extractedData.amount_words.reason}</p>
+              <p>{mappedData.amount_words.value || 'N/A'}</p>
+              {mappedData.amount_words.reason && (
+                <p className="small text-muted">{mappedData.amount_words.reason}</p>
               )}
             </div>
           </div>
@@ -195,66 +213,69 @@ const ChequeStatus = () => {
             <div className="mb-3">
               <div className="d-flex justify-content-between">
                 <h5>{t('cheque.account.number')}</h5>
-                {getConfidenceLevel(extractedData.account_number?.confidence)}
+                {getConfidenceLevel(mappedData.account_number.confidence)}
               </div>
-              <p>{extractedData.account_number?.value || 'N/A'}</p>
-              {extractedData.account_number?.reason && (
-                <p className="small text-muted">{extractedData.account_number.reason}</p>
+              <p>{mappedData.account_number.value || 'N/A'}</p>
+              {mappedData.account_number.reason && (
+                <p className="small text-muted">{mappedData.account_number.reason}</p>
               )}
             </div>
             
             <div className="mb-3">
               <div className="d-flex justify-content-between">
                 <h5>{t('cheque.routing.number')}</h5>
-                {getConfidenceLevel(extractedData.routing_number?.confidence)}
+                {getConfidenceLevel(mappedData.routing_number.confidence)}
               </div>
-              <p>{extractedData.routing_number?.value || 'N/A'}</p>
-              {extractedData.routing_number?.reason && (
-                <p className="small text-muted">{extractedData.routing_number.reason}</p>
+              <p>{mappedData.routing_number.value || 'N/A'}</p>
+              {mappedData.routing_number.reason && (
+                <p className="small text-muted">{mappedData.routing_number.reason}</p>
               )}
             </div>
             
             <div className="mb-3">
               <div className="d-flex justify-content-between">
                 <h5>{t('cheque.cheque.number')}</h5>
-                {getConfidenceLevel(extractedData.cheque_number?.confidence)}
+                {getConfidenceLevel(mappedData.cheque_number.confidence)}
               </div>
-              <p>{extractedData.cheque_number?.value || 'N/A'}</p>
-              {extractedData.cheque_number?.reason && (
-                <p className="small text-muted">{extractedData.cheque_number.reason}</p>
+              <p>{mappedData.cheque_number.value || 'N/A'}</p>
+              {mappedData.cheque_number.reason && (
+                <p className="small text-muted">{mappedData.cheque_number.reason}</p>
               )}
             </div>
             
             <div className="mb-3">
               <div className="d-flex justify-content-between">
                 <h5>{t('cheque.micr')}</h5>
-                {getConfidenceLevel(extractedData.micr_line?.confidence)}
+                {getConfidenceLevel(mappedData.micr_line.confidence)}
               </div>
-              <p className="font-monospace">{extractedData.micr_line?.value || 'N/A'}</p>
-              {extractedData.micr_line?.reason && (
-                <p className="small text-muted">{extractedData.micr_line.reason}</p>
+              <p className="font-monospace">{mappedData.micr_line.value || 'N/A'}</p>
+              {mappedData.micr_line.reason && (
+                <p className="small text-muted">{mappedData.micr_line.reason}</p>
               )}
             </div>
             
-            <div className="mb-3">
-              <div className="d-flex justify-content-between">
-                <h5>{t('cheque.memo')}</h5>
-                {getConfidenceLevel(extractedData.memo?.confidence)}
+            {/* Memo might not be available in new structure */}
+            {extractedData["Memo"] && (
+              <div className="mb-3">
+                <div className="d-flex justify-content-between">
+                  <h5>{t('cheque.memo')}</h5>
+                  {getConfidenceLevel(extractedData["Memo"].confidence)}
+                </div>
+                <p>{extractedData["Memo"].value || 'N/A'}</p>
+                {extractedData["Memo"].reason && (
+                  <p className="small text-muted">{extractedData["Memo"].reason}</p>
+                )}
               </div>
-              <p>{extractedData.memo?.value || 'N/A'}</p>
-              {extractedData.memo?.reason && (
-                <p className="small text-muted">{extractedData.memo.reason}</p>
-              )}
-            </div>
+            )}
             
             <div className="mb-3">
               <div className="d-flex justify-content-between">
                 <h5>{t('cheque.signature')}</h5>
-                {getConfidenceLevel(extractedData.signature_status?.confidence)}
+                {getConfidenceLevel(mappedData.signature_status.confidence)}
               </div>
-              <p>{extractedData.signature_status?.value || 'N/A'}</p>
-              {extractedData.signature_status?.reason && (
-                <p className="small text-muted">{extractedData.signature_status.reason}</p>
+              <p>{mappedData.signature_status.value || 'N/A'}</p>
+              {cheque.signature_coordinates?.description && (
+                <p className="small text-muted">{cheque.signature_coordinates.description}</p>
               )}
             </div>
           </div>
